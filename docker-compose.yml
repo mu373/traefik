@@ -1,0 +1,33 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443/tcp"
+    networks:
+      - traefik-nw
+    environment:
+      TZ: Asia/Tokyo
+    env_file:
+      - ./.env
+    labels:
+      traefik.enable: true
+      traefik.http.routers.dashboard.rule: "Host(`${DASHBOARD_HOSTNAME}`)" # Hostname for this dashboard
+      traefik.http.routers.dashboard.entrypoints: websecure
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.tls.certresolver: cloudflare
+      # Redirect HTTP to HTTPS
+      traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
+      traefik.http.routers.http-catchall.entrypoints: web
+      traefik.http.routers.http-catchall.middlewares: redirect-to-https
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./certs:/letsencrypt
+
+networks:
+  traefik-nw:
+    external: true

@@ -1,0 +1,31 @@
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+api:
+  insecure: false
+  dashboard: true
+
+providers:
+  docker:
+    exposedByDefault: false
+
+# log:
+#   level: DEBUG
+
+serversTransport:
+  insecureSkipVerify: true #Skip verification for upstream https certificate
+
+# Settings for DNS Challenge
+certificatesResolvers:
+  cloudflare:
+    acme:
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 60
+        resolvers: 1.1.1.1:53, 1.0.0.1:53
+      email: mail@example.com
+      storage: /letsencrypt/acme.json
+      keyType: EC384
