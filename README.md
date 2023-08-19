@@ -31,7 +31,7 @@ docker network create traefik-nw
     - e.g. `your-service-1.example.com  CNAME  server001.example.com`
 
 ## Docker containers
-Here is a sample `docker-compose.yml` configuration for the target container that you would like to connect through reverse proxy. In this example, 8080 port of the container will be available at your-service.example.com.
+Here is a sample `docker-compose.yml` configuration for the target container that you would like to connect through reverse proxy. In this example, 8080 port of the container will be available at `your-service-1.example.com`.
 
 ```yml
 services:
