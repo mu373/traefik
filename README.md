@@ -25,7 +25,10 @@ docker network create traefik-nw
     - Override the value for `CLOUDFLARE_DNS_API_TOKEN` in the `.env` file
 - Add `A` record for your node
     - e.g. `server001.example.com  A  100.0.0.1`
+    - You can even use Tailscale IP address here. The contents will only be available when you are connected to Tailscale.
     - Traefik dashboard will be available at this FQDN.
+- Add `CNAME` record(s) for your target service(s)
+    - e.g. `your-service-1.example.com  CNAME  server001.example.com`
 
 ## Docker containers
 Here is a sample `docker-compose.yml` configuration for the target container that you would like to connect through reverse proxy. In this example, 8080 port of the container will be available at your-service.example.com.
@@ -41,7 +44,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik-nw
-      traefik.http.routers.foobar.rule: Host(`your-service.example.com`) # your_service:8080 will be available at your-service.example.com
+      traefik.http.routers.foobar.rule: Host(`your-service-1.example.com`) # your_service:8080 will be available at your-service-1.example.com
       traefik.http.routers.foobar.service: foobar
       traefik.http.routers.foobar.entrypoints: websecure
       traefik.http.routers.foobar.tls.certresolver: cloudflare
