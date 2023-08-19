@@ -8,6 +8,8 @@ Basic [traefik](https://doc.traefik.io/traefik/master/) setup. Easily enable HTT
 ```sh
 cp .env.sample .env
 cp traefik.sample.yml traefik.yml
+vim .env
+vim traefik.yml #Edit email address for Cloudflare account
 ```
 
 ## DNS
