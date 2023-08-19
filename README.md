@@ -16,4 +16,4 @@ cp traefik.sample.yml traefik.yml
     - Override the value for `CLOUDFLARE_DNS_API_TOKEN` in the `.env` file
 - Add `A` record for your node
     - e.g. `server001.example.com  A  100.0.0.1`
-    - Dashboard will be available at this FQDN.
+    - Traefik dashboard will be available at this FQDN.
