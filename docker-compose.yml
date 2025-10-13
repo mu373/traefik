@@ -6,28 +6,40 @@ services:
     ports:
       - "80:80"
       - "443:443/tcp"
-    networks:
-      - traefik-nw
-    environment:
-      TZ: Asia/Tokyo
+      - "50003:50003"
     env_file:
       - ./.env
+    environment:
+      TZ: "${TIMEZONE:-Asia/Tokyo}"
     labels:
       traefik.enable: true
       traefik.http.routers.dashboard.rule: "Host(`${DASHBOARD_HOSTNAME}`)" # Hostname for this dashboard
       traefik.http.routers.dashboard.entrypoints: websecure
       traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.tls.certresolver: cloudflare
-      # Redirect HTTP to HTTPS
-      traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
-      traefik.http.routers.http-catchall.entrypoints: web
-      traefik.http.routers.http-catchall.middlewares: redirect-to-https
-      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./certs:/letsencrypt
+      - traefik:/letsencrypt
+  traefik-ssl-certificate-exporter:
+    container_name: traefik-cert
+    image: rafi0101/traefik-ssl-certificate-exporter:latest
+    environment:
+      CRON_TIME: "* * * * *"
+      CERT_OWNER_ID: "0"
+      CERT_GROUP_ID: "1000"
+    volumes:
+      - traefik:/app/traefik/
+      - traefik-certs:/app/certs
+    restart: unless-stopped
 
 networks:
-  traefik-nw:
+  default:
+    name: traefik-nw
     external: true
+
+volumes:
+  traefik:
+    name: traefik
+  traefik-certs:
+    name: traefik-certs
