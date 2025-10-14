@@ -9,8 +9,10 @@ Preparing configs
 ```sh
 cp .env.sample .env
 cp traefik.sample.yml traefik.yml
+cp dynamic.sample.yml dynamic.yml
 vim .env
 vim traefik.yml #Edit email address for Cloudflare account
+vim dynamic.yml #Configure dynamic routes (optional)
 ```
 
 Preparing Docker network
@@ -52,4 +54,31 @@ services:
 networks:
   traefik-nw:
     external: true
+```
+
+## Dynamic Configuration (Host Services)
+If you need to expose services running on the host machine (outside Docker containers), you can use the `dynamic.yml` file. This is useful for reverse proxying to services that aren't containerized.
+
+Example configuration in `dynamic.yml`:
+```yml
+http:
+  routers:
+    my-app:
+      rule: "Host(`foobar.example.com`)"
+      service: my-app-service
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+
+  services:
+    my-app-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8031"
+```
+
+In this example, requests to `foobar.example.com` will be routed to a service running on the host machine at port 8031. The special DNS name `host.docker.internal` resolves to the host machine from within Docker containers.
+
+**Note:** Make sure to add the appropriate DNS records in Cloudflare for any domains configured in `dynamic.yml`.
 ```
