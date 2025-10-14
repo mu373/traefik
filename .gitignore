@@ -1,3 +1,4 @@
 certs/*
 .env
 traefik.yml
+dynamic.yml
