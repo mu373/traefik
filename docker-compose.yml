@@ -20,7 +20,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
       - traefik:/letsencrypt
+    extra_hosts:  
+      - "host.docker.internal:host-gateway"
   traefik-ssl-certificate-exporter:
     container_name: traefik-cert
     image: rafi0101/traefik-ssl-certificate-exporter:latest
