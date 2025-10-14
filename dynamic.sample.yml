@@ -1,0 +1,15 @@
+http:  
+  routers:  
+    my-app:
+      rule: "Host(`foobar.example.ecom`)"
+      service: my-app-service
+      entryPoints:  
+        - websecure
+      tls:
+        certResolver: cloudflare
+  
+  services:  
+    my-app-service:
+      loadBalancer:
+        servers:  
+          - url: "http://host.docker.internal:8031"
