@@ -2,6 +2,7 @@
 
 Basic [traefik](https://doc.traefik.io/traefik/master/) setup. Easily enable HTTPS access to services running in separate Docker containers.
 - Automatically create SSL certificates using Let's Encrypt with DNS-challenge ([link](https://doc.traefik.io/traefik/master/https/acme/)). Cloudflare is used as the default provider in this repo.
+- Discover Docker routes through [wollomatic/socket-proxy](https://github.com/wollomatic/socket-proxy), restricted by HTTP method and API path. Traefik does not receive the Docker socket directly.
 - Works well with Tailscale.
 
 ## Setup
@@ -20,6 +21,9 @@ Preparing Docker network
 # We will use network called "traefik-nw" for traefik and other containers to communicate with each other
 docker network create traefik-nw 
 ```
+
+Set `DOCKER_GID` in `.env` when the Docker socket group differs from the default
+GID `124`. You can find the host value with `stat -c '%g' /var/run/docker.sock`.
 
 ## DNS
 - Create Cloudflare API token from the [dashboard](https://dash.cloudflare.com/profile/api-tokens).

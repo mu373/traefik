@@ -16,6 +16,7 @@ api:
 
 providers:
   docker:
+    endpoint: tcp://docker-socket-proxy:2375
     exposedByDefault: false
 
 # log:
