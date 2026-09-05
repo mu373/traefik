@@ -6,7 +6,6 @@ services:
     ports:
       - "80:80"
       - "443:443/tcp"
-      - "50003:50003"
     env_file:
       - ./.env
     environment:
