@@ -1,8 +1,22 @@
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:v3.6.2
     container_name: traefik
     restart: always
+    init: true
+    user: "65532:1000"
+    group_add:
+      - "${DOCKER_GID:-124}"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=64m,uid=65532,gid=1000,mode=0700
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 512m
+    cpus: 1.0
     ports:
       - "80:80"
       - "443:443/tcp"
@@ -26,13 +40,25 @@ services:
   traefik-ssl-certificate-exporter:
     container_name: traefik-cert
     image: rafi0101/traefik-ssl-certificate-exporter:latest
+    user: "65532:1000"
+    init: true
+    entrypoint: ["/bin/bash", "/app/export-certificates.sh"]
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=16m,uid=65532,gid=1000,mode=0700
     environment:
-      CRON_TIME: "* * * * *"
-      CERT_OWNER_ID: "0"
-      CERT_GROUP_ID: "1000"
+      EXPORT_INTERVAL_SECONDS: "60"
     volumes:
-      - traefik:/app/traefik/
+      - ./export-certificates.sh:/app/export-certificates.sh:ro
+      - traefik:/app/traefik/:ro
       - traefik-certs:/app/certs
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 32
+    mem_limit: 128m
+    cpus: 0.25
     restart: unless-stopped
 
 networks:
